@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heidi Studio — Trasformo idee in progetti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:        #0a0908;
+      --bg2:       #111009;
+      --gold:      #c9a84c;
+      --gold-l:    #e2c97e;
+      --cream:     #f5f0e8;
+      --muted:     #7a7060;
+      --border:    rgba(201,168,76,0.18);
+      --glass:     rgba(255,255,255,0.03);
+      --font-h:    'Cormorant Garamond', serif;
+      --font-b:    'Inter', sans-serif;
+      --radius:    4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font-b);
+      font-size: 15px;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ─────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+    /* ── CURSOR PERSONALIZZATO ─────────────────── */
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(201,168,76,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease, width 0.25s, height 0.25s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ── NAV ───────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      border-bottom: 1px solid transparent;
+      transition: background 0.4s, border-color 0.4s, padding 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(10,9,8,0.92);
+      backdrop-filter: blur(16px);
+      border-color: var(--border);
+      padding: 1rem 3rem;
+    }
+
+    .nav-logo {
+      font-family: var(--font-h);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--cream);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .nav-logo span { color: var(--gold); }
+
+    .nav-links {
+      display: flex; gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ──────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      padding: 2rem;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-h);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.8rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.55s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-l);
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: rgba(245,240,232,0.65);
+      max-width: 520px;
+      margin: 0 auto 2.8rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.75s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.95s forwards;
+    }
+
+    .btn-gold {
+      display: inline-block;
+      padding: 0.85rem 2.4rem;
+      background: var(--gold);
+      color: #0a0908;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1.5px solid var(--gold);
+      transition: background 0.25s, color 0.25s;
+    }
+    .btn-gold:hover { background: transparent; color: var(--gold); }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 0.85rem 2.4rem;
+      background: transparent;
+      color: var(--cream);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1.5px solid rgba(245,240,232,0.25);
+      transition: border-color 0.25s, color 0.25s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 1s 1.5s forwards;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollLine 2s 1.5s infinite;
+    }
+
+    @keyframes scrollLine {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ── SEZIONI GENERALI ──────────────────────── */
+    .section {
+      padding: 8rem 3rem;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-h);
+      font-size: clamp(2.4rem, 4vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 3rem;
+    }
+
+    hr.sep {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    /* ── ABOUT ─────────────────────────────────── */
+    #about .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: rgba(245,240,232,0.65);
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+    }
+
+    .about-text p strong { color: var(--cream); font-weight: 500; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .stat {
+      border-left: 1px solid var(--border);
+      padding-left: 1.2rem;
+    }
+    .stat-num {
+      font-family: var(--font-h);
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--gold-l);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+    .about-img-placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .about-img-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .about-badge {
+      position: absolute;
+      bottom: -1.5rem;
+      right: -1.5rem;
+      width: 120px;
+      height: 120px;
+      background: var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #0a0908;
+    }
+    .about-badge-num {
+      font-family: var(--font-h);
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .about-badge-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ── SERVIZI DRAGGABLE ─────────────────────── */
+    #servizi-section {
+      background: var(--bg2);
+      padding: 8rem 0;
+    }
+
+    #servizi-section .section {
+      padding-bottom: 0;
+    }
+
+    .servizi-intro {
+      max-width: 540px;
+      margin-bottom: 1rem;
+      color: rgba(245,240,232,0.6);
+    }
+
+    .drag-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 3rem;
+      opacity: 0.7;
+    }
+
+    #drag-arena {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 70%);
+    }
+
+    .service-card {
+      position: absolute;
+      width: 200px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .service-card:hover {
+      border-color: rgba(201,168,76,0.45);
+      box-shadow: 0 8px 40px rgba(201,168,76,0.08);
+    }
+    .service-card:active { cursor: grabbing; }
+    .service-card.dragging {
+      border-color: var(--gold);
+      box-shadow: 0 20px 60px rgba(201,168,76,0.15);
+      z-index: 100;
+    }
+
+    .sc-icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.7rem;
+    }
+    .sc-name {
+      font-family: var(--font-h);
+      font-size: 1.05rem;
+      font-weight: 400;
+      margin-bottom: 0.4rem;
+      color: var(--cream);
+    }
+    .sc-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .sc-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      margin-top: 0.8rem;
+    }
+
+    /* ── PORTFOLIO ─────────────────────────────── */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .portfolio-item {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--bg2);
+      cursor: pointer;
+    }
+
+    .portfolio-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(30%);
+      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.5s;
+    }
+
+    .portfolio-item:hover img {
+      transform: scale(1.06);
+      filter: grayscale(0%);
+    }
+
+    .portfolio-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,9,8,0.92) 0%, transparent 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+
+    .po-cat {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+
+    .po-title {
+      font-family: var(--font-h);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--cream);
+    }
+
+    /* placeholder per le immagini del portfolio */
+    .portfolio-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: linear-gradient(135deg, rgba(201,168,76,0.06), rgba(10,9,8,0.5));
+    }
+
+    /* ── PREZZI ────────────────────────────────── */
+    #prezzi { background: var(--bg2); }
+
+    .prezzi-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid var(--border);
+      padding: 0.6rem 1.2rem;
+      font-size: 0.78rem;
+      color: var(--gold-l);
+      letter-spacing: 0.05em;
+      margin-bottom: 3rem;
+    }
+
+    .prezzi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .prezzo-card {
+      background: var(--bg2);
+      padding: 2.8rem 2.2rem;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .prezzo-card:hover { background: rgba(201,168,76,0.04); }
+    .prezzo-card.featured { background: rgba(201,168,76,0.06); }
+    .prezzo-card.featured::before {
+      content: "Più richiesto";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      background: var(--gold);
+      color: #0a0908;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0.4rem;
+      font-weight: 500;
+    }
+
+    .p-nome {
+      font-family: var(--font-h);
+      font-size: 1.3rem;
+      font-weight: 300;
+      margin-bottom: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .p-valore {
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--gold-l);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .p-valore sup { font-size: 1.2rem; vertical-align: super; }
+    .p-periodo {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 2rem;
+    }
+    .p-lista {
+      list-style: none;
+      margin-bottom: 2.5rem;
+    }
+    .p-lista li {
+      font-size: 0.88rem;
+      color: rgba(245,240,232,0.65);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .p-lista li::before {
+      content: "◆";
+      color: var(--gold);
+      font-size: 0.5rem;
+      margin-top: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .referral-box {
+      border: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      background: rgba(201,168,76,0.03);
+    }
+    .ref-side { text-align: center; }
+    .ref-pct {
+      font-family: var(--font-h);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--gold-l);
+      line-height: 1;
+    }
+    .ref-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-top: 0.3rem;
+    }
+    .ref-divider {
+      width: 1px;
+      height: 80px;
+      background: var(--border);
+    }
+    .ref-title {
+      font-family: var(--font-h);
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+    .ref-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ── CONTATTI ──────────────────────────────── */
+    #contatti .contatti-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contatti-left h3 {
+      font-family: var(--font-h);
+      font-size: 1.6rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+    .contatti-left p {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: var(--cream);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+      font-size: 0.9rem;
+    }
+    .contact-link:hover { color: var(--gold); }
+    .contact-link .cl-icon {
+      width: 38px; height: 38px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-link:hover .cl-icon {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.08);
+    }
+
+    .form-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-contact input,
+    .form-contact textarea,
+    .form-contact select {
+      width: 100%;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      color: var(--cream);
+      font-family: var(--font-b);
+      font-size: 0.88rem;
+      padding: 0.9rem 1.2rem;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .form-contact input::placeholder,
+    .form-contact textarea::placeholder { color: var(--muted); }
+    .form-contact input:focus,
+    .form-contact textarea:focus { border-color: rgba(201,168,76,0.5); }
+    .form-contact textarea { min-height: 120px; resize: vertical; }
+    .form-contact select option { background: #1a1816; color: var(--cream); }
+
+    /* ── FOOTER ────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── ANIMAZIONI ────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      nav.scrolled { padding: 0.8rem 1.5rem; }
+      .nav-links { display: none; }
+      .section { padding: 5rem 1.5rem; }
+      #about .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .portfolio-grid { grid-template-columns: 1fr 1fr; }
+      #contatti .contatti-grid { grid-template-columns: 1fr; gap: 3rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+      #drag-arena { height: 680px; }
+      .referral-box { grid-template-columns: 1fr; text-align: center; }
+      .ref-divider { width: 80px; height: 1px; margin: 0 auto; }
+    }
+    @media (max-width: 600px) {
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .prezzi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSORE PERSONALIZZATO -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ════════════════════════════════════════════
+     NAVIGAZIONE
+════════════════════════════════════════════ -->
+<nav id="navbar">
+  <a class="nav-logo" href="#hero">Heidi <span>Studio</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">Chi sono</a></li>
+    <li><a href="#servizi-section">Servizi</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#prezzi">Prezzi</a></li>
+    <li><a href="#contatti">Contatti</a></li>
+  </ul>
+</nav>
+
+
+<!-- ════════════════════════════════════════════
+     HERO — Three.js Background + Contenuto
+════════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="three-canvas"></canvas>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Heidi Studio · Roma</p>
+    <h1 class="hero-title">
+      Trasformo idee<br><em>in progetti</em>
+    </h1>
+    <p class="hero-tagline">
+      Design digitale, siti web e comunicazione per chi vuole farsi ricordare.
+    </p>
+    <div class="hero-cta">
+      <a class="btn-gold" href="#portfolio">Guarda i miei lavori</a>
+      <a class="btn-outline" href="#contatti">Lavoriamo insieme →</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scopri</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     CHI SONO
+════════════════════════════════════════════ -->
+<section class="section" id="about">
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p class="section-label">Chi sono</p>
+      <h2 class="section-title">Creatività<br>con metodo</h2>
+      <div class="section-line"></div>
+
+      <p>
+        Sono <strong>Heidi Maria Valleriani</strong>, studio Ingegneria ma vivo di creatività.
+        Ho ricominciato a realizzare siti web e progetti digitali con la stessa passione
+        con cui nel 2016, a 18 anni, ho trasformato un piccolo container di mia nonna
+        in un <strong>Airbnb di successo</strong> — imparando da zero branding,
+        fotografia e comunicazione digitale.
+      </p>
+      <p>
+        Oggi affianco professionisti, attività locali e creativi che vogliono una presenza
+        online che li rappresenti davvero: <strong>chiara, bella e pronta a lavorare</strong>.
+      </p>
+      <p>
+        Non vendo solo siti. Aiuto le persone a capire cosa vogliono comunicare,
+        e poi lo costruiamo insieme.
+      </p>
+
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">9+</div>
+          <div class="stat-label">Progetti completati</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2016</div>
+          <div class="stat-label">Inizio del percorso</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">50%</div>
+          <div class="stat-label">Sconto primo progetto</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24h</div>
+          <div class="stat-label">Risposta garantita</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-visual reveal">
+      <div class="about-img-placeholder">
+        <!-- ✏️ Sostituisci con: <img src="foto.jpg" alt="Heidi Valleriani" /> -->
+        [ La tua foto qui ]
+      </div>
+      <div class="about-badge">
+        <div class="about-badge-num">HS</div>
+        <div class="about-badge-label">Heidi Studio</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+
+<!-- ════════════════════════════════════════════
+     SERVIZI — DRAG & DROP INTERATTIVO
+════════════════════════════════════════════ -->
+<div id="servizi-section">
+  <div class="section">
+    <p class="section-label reveal">Cosa offro</p>
+    <h2 class="section-title reveal">I miei servizi</h2>
+    <div class="section-line reveal"></div>
+    <p class="servizi-intro reveal">
+      Esplora i servizi trascinandoli nello spazio — oppure
+      <a href="#contatti" style="color:var(--gold);text-decoration:none;">contattami</a>
+      direttamente per parlare del tuo progetto.
+    </p>
+    <p class="drag-hint reveal">
+      <span>☽</span> Trascina le card dove vuoi
+    </p>
+  </div>
+
+  <div id="drag-arena">
+    <!-- Le card vengono generate via JS -->
+  </div>
+</div>
+
+<hr class="sep" />
+
+
+<!-- ════════════════════════════════════════════
+     PORTFOLIO
+════════════════════════════════════════════ -->
+<section class="section" id="portfolio">
+  <p class="section-label reveal">Lavori</p>
+  <h2 class="section-title reveal">Portfolio</h2>
+  <div class="section-line reveal"></div>
+
+  <div class="portfolio-grid reveal">
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🍝</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Too Good To Go</p>
+        <p class="po-title">Mani in Pasta</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🏡</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Airbnb & Hospitality</p>
+        <p class="po-title">Fattoria Nonna Iolanda</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🚚</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Video & Comunicazione</p>
+        <p class="po-title">Noleggio Tomassi</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🏌️</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Hospitality</p>
+        <p class="po-title">Rydercup House</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">👗</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Fashion — TikTok & Instagram</p>
+        <p class="po-title">Mimi et Mamà Alta Sartoria</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🍪</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Social & Ads</p>
+        <p class="po-title">Pasticceria Biscotto</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">💻</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Sito Web & Logo</p>
+        <p class="po-title">ICT Coach</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">📈</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Community Management</p>
+        <p class="po-title">Chiocchi Trading</p>
+      </div>
+    </div>
+
+    <div class="portfolio-item">
+      <div class="portfolio-placeholder">🍝</div>
+      <div class="portfolio-overlay">
+        <p class="po-cat">Social Media Content</p>
+        <p class="po-title">Pastificio Antonio Amato</p>
+      </div>
+    </div>
+
+  </div>
+  <!-- ✏️ Sostituisci le emoji con veri screenshot: <img src="screenshot.jpg" alt="..." /> -->
+</section>
+
+<hr class="sep" />
+
+
+<!-- ════════════════════════════════════════════
+     PREZZI
+════════════════════════════════════════════ -->
+<section class="section" id="prezzi" style="background:var(--bg2);">
+  <p class="section-label reveal">Investimento</p>
+  <h2 class="section-title reveal">Listino Prezzi</h2>
+  <div class="section-line reveal"></div>
+
+  <div class="prezzi-note reveal">
+    🎉 &nbsp;Primo progetto con il <strong>50% di sconto</strong> — scrivimi per approfittarne!
+  </div>
+
+  <div class="prezzi-grid reveal">
+
+    <!-- ✏️ AGGIORNA i prezzi con il tuo listino ufficiale -->
+    <div class="prezzo-card">
+      <p class="p-nome">Biglietto Digitale NFC</p>
+      <p class="p-valore"><sup>€</sup>—</p>
+      <p class="p-periodo">da listino</p>
+      <ul class="p-lista">
+        <li>Tag NFC personalizzato</li>
+        <li>Link a sito / portfolio / menu</li>
+        <li>Design della card incluso</li>
+        <li>Consegna rapida</li>
+      </ul>
+      <a class="btn-outline" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Richiedi</a>
+    </div>
+
+    <div class="prezzo-card featured">
+      <p class="p-nome">Sito Web</p>
+      <p class="p-valore"><sup>€</sup>—</p>
+      <p class="p-periodo">da listino · una tantum</p>
+      <ul class="p-lista">
+        <li>Design personalizzato</li>
+        <li>Mobile responsive</li>
+        <li>SEO base incluso</li>
+        <li>Form di contatto</li>
+        <li>Consegna in 7–15 giorni</li>
+      </ul>
+      <a class="btn-gold" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Richiedi</a>
+    </div>
+
+    <div class="prezzo-card">
+      <p class="p-nome">Gestione Social</p>
+      <p class="p-valore"><sup>€</sup>—</p>
+      <p class="p-periodo">da listino · al mese</p>
+      <ul class="p-lista">
+        <li>Strategia personalizzata</li>
+        <li>Creazione contenuti</li>
+        <li>Gestione profilo</li>
+        <li>Report mensile</li>
+      </ul>
+      <a class="btn-outline" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Richiedi</a>
+    </div>
+
+    <div class="prezzo-card">
+      <p class="p-nome">Visual Brand Identity</p>
+      <p class="p-valore"><sup>€</sup>—</p>
+      <p class="p-periodo">da listino · pacchetto</p>
+      <ul class="p-lista">
+        <li>Logo + varianti</li>
+        <li>Palette colori & font</li>
+        <li>Grafiche social</li>
+        <li>Brand guidelines</li>
+      </ul>
+      <a class="btn-outline" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Richiedi</a>
+    </div>
+
+    <div class="prezzo-card">
+      <p class="p-nome">Campagne Pubblicitarie</p>
+      <p class="p-valore"><sup>€</sup>—</p>
+      <p class="p-periodo">da listino · al mese</p>
+      <ul class="p-lista">
+        <li>Strategia ads su misura</li>
+        <li>Creazione annunci</li>
+        <li>Targeting & ottimizzazione</li>
+        <li>Report risultati</li>
+      </ul>
+      <a class="btn-outline" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Richiedi</a>
+    </div>
+
+    <div class="prezzo-card" style="background:rgba(201,168,76,0.03);">
+      <p class="p-nome">Too Good To Go</p>
+      <p class="p-valore" style="font-size:2rem;">GRATIS</p>
+      <p class="p-periodo">zero commissioni</p>
+      <ul class="p-lista">
+        <li>Configurazione account</li>
+        <li>Foto & descrizione</li>
+        <li>Ottimizzazione visibilità</li>
+        <li>Impostazione Magic Box</li>
+      </ul>
+      <a class="btn-outline" href="#contatti" style="display:inline-block;font-size:0.75rem;padding:0.65rem 1.5rem;">Inizia gratis</a>
+    </div>
+
+  </div>
+
+  <!-- REFERRAL BOX -->
+  <div class="referral-box reveal">
+    <div class="ref-side">
+      <div class="ref-pct">30%</div>
+      <div class="ref-label">sconto per il tuo cliente</div>
+    </div>
+    <div class="ref-divider"></div>
+    <div>
+      <p class="ref-title">Programma referral 🔥</p>
+      <p class="ref-desc">
+        Presentami un nuovo cliente: lui riceve il 30% di sconto,
+        tu ricevi il 20% del valore del lavoro. Semplice e conveniente per tutti.
+      </p>
+    </div>
+    <div class="ref-divider"></div>
+    <div class="ref-side">
+      <div class="ref-pct">20%</div>
+      <div class="ref-label">per te come referrer</div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+
+<!-- ════════════════════════════════════════════
+     CONTATTI
+════════════════════════════════════════════ -->
+<section class="section" id="contatti">
+  <div class="contatti-grid">
+
+    <div class="contatti-left reveal">
+      <p class="section-label">Parliamo</p>
+      <h2 class="section-title">Hai un'idea?<br>Raccontamela.</h2>
+      <div class="section-line"></div>
+      <p>
+        Che tu abbia già tutto chiaro o mille idee sparse, scrivimi.
+        Rispondo entro 24 ore e il primo confronto è sempre gratuito.
+      </p>
+
+      <a class="contact-link" href="mailto:vallerianiheidi@gmail.com">
+        <span class="cl-icon">✉</span>
+        vallerianiheidi@gmail.com
+      </a>
+      <a class="contact-link" href="tel:+393498204228">
+        <span class="cl-icon">☎</span>
+        (+39) 349 820 4228
+      </a>
+      <a class="contact-link" href="https://wa.me/393498204228" target="_blank">
+        <span class="cl-icon">◇</span>
+        WhatsApp — scrivimi subito
+      </a>
+      <a class="contact-link" href="https://vallerianiheidi.wixsite.com/heidi-studio" target="_blank">
+        <span class="cl-icon">↗</span>
+        Sito provvisorio Wix
+      </a>
+    </div>
+
+    <!-- ✏️ Configura Formspree: vai su formspree.io, crea un form gratis
+         e sostituisci TUOIDFORMSPREE con il tuo ID -->
+    <form class="form-contact reveal" action="https://formspree.io/f/TUOIDFORMSPREE" method="POST">
+      <input type="text" name="nome" placeholder="Il tuo nome *" required />
+      <input type="email" name="email" placeholder="La tua email *" required />
+      <select name="servizio">
+        <option value="" disabled selected>Che servizio ti interessa?</option>
+        <option>Sito Web</option>
+        <option>Biglietto Digitale NFC</option>
+        <option>Gestione Social Media</option>
+        <option>Visual Brand Identity</option>
+        <option>Campagne Pubblicitarie</option>
+        <option>Too Good To Go (gratuito)</option>
+        <option>Altro</option>
+      </select>
+      <textarea name="messaggio" placeholder="Raccontami il tuo progetto..."></textarea>
+      <button type="submit" class="btn-gold" style="cursor:pointer;font-family:var(--font-b);border:none;text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;">
+        Invia messaggio →
+      </button>
+    </form>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer>
+  <span>© 2026 Heidi Studio · Roma, Italia</span>
+  <span style="color:var(--border);">|</span>
+  <span>Realizzato con codice puro — nessun abbonamento 🧚🏻</span>
+</footer>
+
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ─── CURSORE PERSONALIZZATO ───────────────────────────────── */
+const cursor     = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mouseX = 0, mouseY = 0;
+let ringX  = 0, ringY  = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top  = mouseY + 'px';
+});
+
+(function animRing() {
+  ringX += (mouseX - ringX) * 0.14;
+  ringY += (mouseY - ringY) * 0.14;
+  cursorRing.style.left = ringX + 'px';
+  cursorRing.style.top  = ringY + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('a,button,.service-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width  = '18px';
+    cursor.style.height = '18px';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width  = '10px';
+    cursor.style.height = '10px';
+  });
+});
+
+
+/* ─── NAVBAR SCROLL ─────────────────────────────────────────── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+
+/* ─── THREE.JS HERO ─────────────────────────────────────────── */
+(function initThree() {
+  const canvas   = document.getElementById('three-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.z = 35;
+
+  /* Particelle / stelle di sfondo */
+  const starsGeo = new THREE.BufferGeometry();
+  const starCount = 1200;
+  const starPositions = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount * 3; i++) {
+    starPositions[i] = (Math.random() - 0.5) * 200;
+  }
+  starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const starsMat = new THREE.PointsMaterial({ color: 0xc9a84c, size: 0.12, transparent: true, opacity: 0.5 });
+  scene.add(new THREE.Points(starsGeo, starsMat));
+
+  /* Forme geometriche fluttuanti */
+  const shapes = [];
+  const geometries = [
+    new THREE.OctahedronGeometry(1.4, 0),
+    new THREE.TetrahedronGeometry(1.2, 0),
+    new THREE.IcosahedronGeometry(1.1, 0),
+    new THREE.BoxGeometry(1.6, 1.6, 1.6),
+    new THREE.OctahedronGeometry(0.9, 0),
+    new THREE.TetrahedronGeometry(0.8, 0),
+  ];
+
+  geometries.forEach((geo, i) => {
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xc9a84c,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.18 + Math.random() * 0.12,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    const spread = 22;
+    mesh.position.set(
+      (Math.random() - 0.5) * spread,
+      (Math.random() - 0.5) * spread * 0.7,
+      (Math.random() - 0.5) * 10 - 5
+    );
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+    mesh.userData.speedX = (Math.random() - 0.5) * 0.003;
+    mesh.userData.speedY = (Math.random() - 0.5) * 0.003;
+    mesh.userData.speedZ = (Math.random() - 0.5) * 0.002;
+    mesh.userData.floatAmp = 0.4 + Math.random() * 0.6;
+    mesh.userData.floatFreq = 0.4 + Math.random() * 0.6;
+    mesh.userData.origY = mesh.position.y;
+    scene.add(mesh);
+    shapes.push(mesh);
+  });
+
+  /* Mouse parallax */
+  let mouseNX = 0, mouseNY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseNX = (e.clientX / window.innerWidth  - 0.5) * 2;
+    mouseNY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  /* Resize */
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  /* Render loop */
+  const clock = new THREE.Clock();
+  (function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    shapes.forEach(m => {
+      m.rotation.x += m.userData.speedX;
+      m.rotation.y += m.userData.speedY;
+      m.rotation.z += m.userData.speedZ;
+      m.position.y = m.userData.origY + Math.sin(t * m.userData.floatFreq) * m.userData.floatAmp;
+    });
+
+    /* Leggero parallax con il mouse */
+    camera.position.x += (mouseNX * 1.5 - camera.position.x) * 0.02;
+    camera.position.y += (-mouseNY * 0.8 - camera.position.y) * 0.02;
+
+    renderer.render(scene, camera);
+  })();
+})();
+
+
+/* ─── DRAG & DROP SERVIZI ──────────────────────────────────── */
+(function initDrag() {
+  const services = [
+    { icon: '💻', name: 'Creazione Siti Web', desc: 'Siti su misura, ottimizzati e mobile-first.', tag: 'Web', x: 2, y: 5 },
+    { icon: '📇', name: 'Biglietto Digitale NFC', desc: 'Avvicini il telefono e si apre il tuo sito.', tag: 'NFC', x: 22, y: 8 },
+    { icon: '📱', name: 'Gestione Social Media', desc: 'Strategia, contenuti ed engagement.', tag: 'Social', x: 42, y: 4 },
+    { icon: '🎨', name: 'Visual Brand Identity', desc: 'Logo, palette, grafiche e brand guidelines.', tag: 'Brand', x: 62, y: 10 },
+    { icon: '📣', name: 'Campagne Pubblicitarie', desc: 'Ads su social e web per raggiungere i tuoi clienti.', tag: 'Ads', x: 2, y: 52 },
+    { icon: '✍️', name: 'Social Media Content', desc: 'Grafiche, post e stories coerenti col tuo brand.', tag: 'Content', x: 30, y: 55 },
+    { icon: '🍽️', name: 'Too Good To Go', desc: 'Configurazione account gratuita per la tua attività.', tag: 'Gratis', x: 58, y: 50 },
+  ];
+
+  const arena = document.getElementById('drag-arena');
+
+  services.forEach(svc => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    card.style.left = svc.x + '%';
+    card.style.top  = svc.y + '%';
+    card.innerHTML = `
+      <div class="sc-icon">${svc.icon}</div>
+      <div class="sc-name">${svc.name}</div>
+      <div class="sc-desc">${svc.desc}</div>
+      <div class="sc-tag">${svc.tag}</div>
+    `;
+    arena.appendChild(card);
+
+    let isDragging = false;
+    let startX, startY, startLeft, startTop;
+
+    card.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = card.offsetLeft;
+      startTop  = card.offsetTop;
+      card.classList.add('dragging');
+      // porta in primo piano
+      document.querySelectorAll('.service-card').forEach(c => c.style.zIndex = 1);
+      card.style.zIndex = 50;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const arenaRect = arena.getBoundingClientRect();
+      let newLeft = startLeft + dx;
+      let newTop  = startTop  + dy;
+      // limiti arena
+      newLeft = Math.max(0, Math.min(arenaRect.width  - card.offsetWidth,  newLeft));
+      newTop  = Math.max(0, Math.min(arenaRect.height - card.offsetHeight, newTop));
+      card.style.left = newLeft + 'px';
+      card.style.top  = newTop  + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      card.classList.remove('dragging');
+    });
+
+    /* Touch support */
+    card.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      startX = t.clientX; startY = t.clientY;
+      startLeft = card.offsetLeft; startTop = card.offsetTop;
+      card.classList.add('dragging');
+      card.style.zIndex = 50;
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      const arenaRect = arena.getBoundingClientRect();
+      let newLeft = Math.max(0, Math.min(arenaRect.width  - card.offsetWidth,  startLeft + dx));
+      let newTop  = Math.max(0, Math.min(arenaRect.height - card.offsetHeight, startTop  + dy));
+      card.style.left = newLeft + 'px';
+      card.style.top  = newTop  + 'px';
+      e.preventDefault();
+    }, { passive: false });
+
+    card.addEventListener('touchend', () => card.classList.remove('dragging'));
+  });
+})();
+
+
+/* ─── SCROLL REVEAL ─────────────────────────────────────────── */
+(function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(el => obs.observe(el));
+})();
+</script>
+
+</body>
+</html>
