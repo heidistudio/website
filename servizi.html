@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servizi & Prezzi — Heidi Studio</title>
+  <meta name="description" content="Servizi di Heidi Studio: siti web, social media, branding, NFC, advertising. Prezzi e pacchetti." />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+
+    /* ══ SERVIZI DETTAGLIO ══════════════════════ */
+    .service-block {
+      padding: 7rem 3.5rem;
+      max-width: 1240px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 6rem; align-items: start;
+    }
+    .service-block.reverse { direction: rtl; }
+    .service-block.reverse > * { direction: ltr; }
+
+    .sb-left .sb-num {
+      font-family: var(--font-h); font-size: 5rem;
+      font-weight: 300; color: var(--pink);
+      opacity: .25; line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+    .sb-left .sb-icon {
+      font-size: 3rem; margin-bottom: 1rem;
+    }
+    .sb-left h2 {
+      font-family: var(--font-h); font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .sb-left h2 em { font-style: italic; color: var(--pink-ll); }
+    .sb-left .sb-tagline {
+      font-size: 1rem; color: var(--muted); line-height: 1.7;
+    }
+
+    .sb-right p {
+      color: rgba(242,237,232,.65); line-height: 1.85;
+      margin-bottom: 1.2rem;
+    }
+    .sb-right p strong { color: var(--cream); font-weight: 500; }
+
+    .include-list {
+      list-style: none; margin: 1.5rem 0 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .include-list li {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: .9rem 0; border-bottom: 1px solid var(--border);
+      font-size: .9rem; color: rgba(242,237,232,.7);
+    }
+    .include-list li::before {
+      content: '◆'; color: var(--pink);
+      font-size: .5rem; margin-top: .45rem; flex-shrink: 0;
+    }
+
+    .sb-visual {
+      aspect-ratio: 4/3;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(217,92,122,.1), rgba(12,10,11,.8));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; border: 1px solid var(--border);
+      transition: border-color .3s;
+    }
+    .sb-visual:hover { border-color: rgba(217,92,122,.4); }
+
+    /* ══ GRATIS BADGE ═══════════════════════════ */
+    .free-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(217,92,122,.12); border: 1px solid var(--border);
+      border-radius: 100px; padding: .4rem 1rem;
+      font-size: .72rem; color: var(--pink-l); letter-spacing: .08em;
+      margin-bottom: 1rem;
+    }
+
+    /* ══ PREZZI ═════════════════════════════════ */
+    #prezzi {
+      background: var(--bg2);
+      padding: 9rem 0;
+    }
+    #prezzi .section { padding: 0 3.5rem; }
+
+    .prezzi-nota {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: rgba(217,92,122,.08); border: 1px solid var(--border);
+      border-radius: 12px; padding: .8rem 1.4rem;
+      font-size: .82rem; color: var(--pink-ll);
+      margin-bottom: 3.5rem;
+    }
+
+    .prezzi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; margin-bottom: 3rem;
+    }
+
+    .prezzo-card {
+      background: var(--bg2); padding: 3rem 2.2rem;
+      position: relative; transition: background .3s;
+    }
+    .prezzo-card:hover { background: rgba(217,92,122,.05); }
+    .prezzo-card.featured { background: rgba(217,92,122,.07); }
+    .prezzo-card.featured::before {
+      content: "Più richiesto";
+      display: block; text-align: center;
+      background: var(--pink); color: #fff;
+      font-size: .65rem; letter-spacing: .15em;
+      text-transform: uppercase; padding: .4rem;
+      margin: -3rem -2.2rem 2.5rem;
+      font-weight: 500;
+    }
+    .p-nome {
+      font-family: var(--font-h); font-size: 1.4rem;
+      font-weight: 300; margin-bottom: .5rem;
+    }
+    .p-valore {
+      font-size: 3rem; font-weight: 300;
+      color: var(--pink-ll); line-height: 1; margin-bottom: .3rem;
+    }
+    .p-valore sup { font-size: 1.2rem; vertical-align: super; }
+    .p-valore.gratis { font-size: 2rem; color: var(--pink); }
+    .p-periodo { font-size: .75rem; color: var(--muted); letter-spacing: .06em; margin-bottom: 2rem; }
+    .p-lista { list-style: none; margin-bottom: 2.5rem; }
+    .p-lista li {
+      font-size: .88rem; color: rgba(242,237,232,.65);
+      padding: .5rem 0; border-bottom: 1px solid rgba(217,92,122,.1);
+      display: flex; gap: .6rem; align-items: flex-start;
+    }
+    .p-lista li::before {
+      content: '◆'; color: var(--pink);
+      font-size: .45rem; margin-top: .45rem; flex-shrink: 0;
+    }
+
+    /* Referral box */
+    .referral-box {
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 3rem; display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2.5rem; align-items: center;
+      background: rgba(217,92,122,.03);
+    }
+    .ref-side { text-align: center; }
+    .ref-pct {
+      font-family: var(--font-h); font-size: 4rem;
+      font-weight: 300; color: var(--pink-ll); line-height: 1;
+    }
+    .ref-label { font-size: .75rem; color: var(--muted); letter-spacing: .06em; margin-top: .3rem; }
+    .ref-div { width: 1px; height: 80px; background: var(--border); }
+    .ref-title { font-family: var(--font-h); font-size: 1.4rem; font-weight: 300; margin-bottom: .5rem; }
+    .ref-desc { font-size: .85rem; color: var(--muted); line-height: 1.7; }
+
+    /* ══ EVENTI ═════════════════════════════════ */
+    #eventi { padding: 9rem 0; }
+    #eventi .section { padding: 0 3.5rem; }
+
+    .eventi-grid {
+      display: flex; flex-direction: column;
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden;
+    }
+    .evento-row {
+      background: var(--bg2); padding: 2rem 2.5rem;
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 2rem; align-items: center;
+      transition: background .25s;
+    }
+    .evento-row:hover { background: rgba(217,92,122,.05); }
+    .ev-data { text-align: center; }
+    .ev-giorno {
+      font-family: var(--font-h); font-size: 2.2rem;
+      font-weight: 300; color: var(--pink); line-height: 1;
+    }
+    .ev-mese {
+      font-size: .65rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .ev-nome {
+      font-family: var(--font-h); font-size: 1.3rem;
+      font-weight: 300; margin-bottom: .3rem;
+    }
+    .ev-desc { font-size: .85rem; color: var(--muted); }
+    .ev-stato {
+      font-size: .65rem; letter-spacing: .12em;
+      text-transform: uppercase; padding: .35rem .9rem;
+      border-radius: 100px; white-space: nowrap;
+    }
+    .ev-stato.aperto {
+      background: rgba(217,92,122,.12); color: var(--pink-l);
+      border: 1px solid var(--border);
+    }
+    .ev-stato.presto {
+      background: rgba(242,237,232,.05); color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .ev-vuoto {
+      background: var(--bg2); padding: 3rem 2.5rem;
+      text-align: center; color: var(--muted);
+      font-size: .9rem;
+    }
+
+    /* ══ CONTATTI ════════════════════════════════ */
+    #contatti { background: var(--bg2); padding: 9rem 0; }
+    #contatti .section { padding: 0 3.5rem; }
+
+    .contatti-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: start;
+    }
+    .cl-title {
+      font-family: var(--font-h); font-size: 1.6rem;
+      font-weight: 300; margin-bottom: 1rem;
+    }
+    .cl-text { color: var(--muted); line-height: 1.8; margin-bottom: 2.5rem; }
+
+    .contact-link {
+      display: flex; align-items: center; gap: 1rem;
+      text-decoration: none; color: var(--cream);
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+      transition: color .2s; font-size: .92rem;
+    }
+    .contact-link:hover { color: var(--pink-l); }
+    .cl-icon {
+      width: 44px; height: 44px;
+      border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      transition: border-color .2s, background .2s;
+    }
+    .contact-link:hover .cl-icon { border-color: var(--pink); background: rgba(217,92,122,.1); }
+
+    .form-contact {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .form-contact input,
+    .form-contact textarea,
+    .form-contact select {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--cream);
+      font-family: var(--font-b); font-size: .88rem;
+      padding: .9rem 1.3rem; outline: none;
+      transition: border-color .2s; appearance: none;
+    }
+    .form-contact input::placeholder,
+    .form-contact textarea::placeholder { color: var(--muted); }
+    .form-contact input:focus,
+    .form-contact textarea:focus { border-color: rgba(217,92,122,.6); }
+    .form-contact textarea { min-height: 130px; resize: vertical; }
+    .form-contact select option { background: #1a1318; }
+
+    /* ══ RESPONSIVE ═════════════════════════════ */
+    @media (max-width: 900px) {
+      .service-block { grid-template-columns: 1fr; gap: 2.5rem; padding: 4rem 1.8rem; }
+      .service-block.reverse { direction: ltr; }
+      #prezzi .section,
+      #eventi .section,
+      #contatti .section { padding: 0 1.8rem; }
+      .contatti-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .referral-box { grid-template-columns: 1fr; text-align: center; }
+      .ref-div { width: 60px; height: 1px; margin: 0 auto; }
+      .evento-row { grid-template-columns: 60px 1fr; }
+      .ev-stato { display: none; }
+    }
+  </style>
+</head>
+<body class="grain">
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ══ NAVBAR ════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">Heidi <em>Studio</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="portfolio.html">Portfolio</a></li>
+    <li><a href="servizi.html">Servizi</a></li>
+    <li><a href="servizi.html#contatti">Contatti</a></li>
+  </ul>
+  <div class="nav-burger" id="nav-burger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="index.html">Home</a>
+  <a href="portfolio.html">Portfolio</a>
+  <a href="servizi.html">Servizi</a>
+  <a href="servizi.html#contatti">Contatti</a>
+</div>
+
+
+<!-- ══ PAGE HERO ═════════════════════════════ -->
+<div class="page-hero">
+  <p class="page-hero-num">03 — Cosa offro</p>
+  <h1 class="page-hero-title">
+    Servizi<br><em>& prezzi</em>
+  </h1>
+  <p class="page-hero-sub">Dal sito web al biglietto NFC — tutto ciò di cui hai bisogno per esistere online in modo professionale.</p>
+</div>
+
+
+<!-- ══ SERVIZIO 01 — SITI WEB ═════════════════ -->
+<div id="siti-web">
+  <div class="service-block">
+    <div class="sb-left reveal-left">
+      <div class="sb-num">01</div>
+      <div class="sb-icon">💻</div>
+      <h2>Creazione<br><em>Siti Web</em></h2>
+      <p class="sb-tagline">
+        Trasformo la tua idea in un sito bello, veloce e facile da usare.
+        Su misura per te, non un template qualsiasi.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Progettiamo e sviluppiamo siti web esteticamente curati e funzionali,
+        ottimizzati per offrire un'<strong>esperienza utente eccezionale</strong>.
+        Ogni sito è pensato con te, per il tuo pubblico specifico.
+      </p>
+      <p>
+        Lavoro principalmente con <strong>Wix</strong> e strumenti no-code moderni
+        che permettono di avere un risultato professionale in tempi rapidi,
+        con la possibilità di gestire i contenuti in autonomia.
+      </p>
+      <ul class="include-list">
+        <li>Design completamente personalizzato sul tuo brand</li>
+        <li>Layout mobile-first — perfetto su ogni dispositivo</li>
+        <li>SEO base incluso (titoli, meta, velocità)</li>
+        <li>Form di contatto e integrazione WhatsApp</li>
+        <li>Consegna in 7–15 giorni lavorativi</li>
+        <li>1 mese di supporto post-consegna incluso</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Richiedi un preventivo →</a>
+    </div>
+  </div>
+</div>
+<hr class="sep" />
+
+<!-- ══ SERVIZIO 02 — SOCIAL MEDIA ════════════ -->
+<div id="social">
+  <div class="service-block reverse">
+    <div class="sb-left reveal-right">
+      <div class="sb-num">02</div>
+      <div class="sb-icon">📱</div>
+      <h2>Gestione<br><em>Social Media</em></h2>
+      <p class="sb-tagline">
+        Mi occupo dei tuoi social così tu puoi concentrarti su ciò che sai fare meglio.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Gestione completa dei profili Instagram, TikTok, Facebook —
+        dalla strategia alla pubblicazione, con <strong>contenuti pensati
+        per il tuo pubblico</strong> e coerenti con la tua identità.
+      </p>
+      <p>
+        Non creo contenuti generici. Studio il tuo brand, il tuo tono,
+        il tuo settore — e costruisco una presenza che si nota.
+      </p>
+      <ul class="include-list">
+        <li>Strategia editoriale mensile personalizzata</li>
+        <li>Creazione contenuti: grafiche, caption, stories</li>
+        <li>Pubblicazione e gestione del profilo</li>
+        <li>Interazione con la community</li>
+        <li>Report mensile dei risultati</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Inizia ora →</a>
+    </div>
+  </div>
+</div>
+<hr class="sep" />
+
+<!-- ══ SERVIZIO 03 — BRAND IDENTITY ══════════ -->
+<div id="brand">
+  <div class="service-block">
+    <div class="sb-left reveal-left">
+      <div class="sb-num">03</div>
+      <div class="sb-icon">🎨</div>
+      <h2>Visual Brand<br><em>Identity</em></h2>
+      <p class="sb-tagline">
+        Creo l'identità visiva del tuo brand — quella che fa sì che le persone
+        ti riconoscano al primo sguardo.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Un brand forte non è solo un logo. È un <strong>sistema visivo coerente</strong>
+        che parla di te in ogni touchpoint — dal sito ai social, dalle email ai biglietti da visita.
+      </p>
+      <p>
+        Partendo dalla tua storia, dai tuoi valori e dal tuo pubblico, costruisco
+        un'identità visiva unica che ti distingue nel mercato.
+      </p>
+      <ul class="include-list">
+        <li>Logo principale + varianti (colore, bianco, nero)</li>
+        <li>Palette colori e tipografia ufficiale</li>
+        <li>Template grafiche social (Stories, Post, Cover)</li>
+        <li>Materiali promozionali base</li>
+        <li>Brand guidelines — manuale d'uso della tua identità</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Parla del tuo progetto →</a>
+    </div>
+  </div>
+</div>
+<hr class="sep" />
+
+<!-- ══ SERVIZIO 04 — NFC ══════════════════════ -->
+<div id="nfc">
+  <div class="service-block reverse">
+    <div class="sb-left reveal-right">
+      <div class="sb-num">04</div>
+      <div class="sb-icon">📇</div>
+      <h2>Biglietto<br><em>Digitale NFC</em></h2>
+      <p class="sb-tagline">
+        Avvicini il telefono e si apre il tuo sito.
+        Il biglietto da visita del futuro, già disponibile.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Un servizio che rende ogni biglietto <strong>interattivo e intelligente</strong>.
+        Creo biglietti digitali personalizzati dotati di tag NFC: basta avvicinare il telefono
+        e si apre automaticamente il sito, il portfolio, un video, un menu digitale
+        o qualsiasi link tu voglia condividere.
+      </p>
+      <p>
+        Un modo moderno, elegante e immediato per presentarti,
+        senza sprechi e senza il limite dei biglietti tradizionali.
+      </p>
+      <ul class="include-list">
+        <li>Tag NFC personalizzato e programmato</li>
+        <li>Design del biglietto fisico incluso</li>
+        <li>Link configurabile (sito, portfolio, menu, contatto)</li>
+        <li>Modificabile in qualsiasi momento</li>
+        <li>Funziona su iPhone e Android senza app</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Richiedi il tuo →</a>
+    </div>
+  </div>
+</div>
+<hr class="sep" />
+
+<!-- ══ SERVIZIO 05 — ADS ══════════════════════ -->
+<div id="ads">
+  <div class="service-block">
+    <div class="sb-left reveal-left">
+      <div class="sb-num">05</div>
+      <div class="sb-icon">📣</div>
+      <h2>Campagne<br><em>Pubblicitarie</em></h2>
+      <p class="sb-tagline">
+        Il tuo brand davanti alle persone giuste, al momento giusto.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Gestisco campagne pubblicitarie su Meta (Instagram e Facebook) e Google Ads
+        per aumentare visibilità, traffico e conversioni.
+        Mi occupo di <strong>tutto il ciclo</strong>: strategia, creazione annunci,
+        targeting, ottimizzazione e reportistica.
+      </p>
+      <ul class="include-list">
+        <li>Strategia pubblicitaria su misura</li>
+        <li>Creazione creatività (immagini, video, copy)</li>
+        <li>Configurazione audience e targeting</li>
+        <li>Gestione budget e ottimizzazione continua</li>
+        <li>Report settimanale con risultati e insight</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Partiamo →</a>
+    </div>
+  </div>
+</div>
+<hr class="sep" />
+
+<!-- ══ SERVIZIO 06 — TOO GOOD TO GO ══════════ -->
+<div id="tgtg">
+  <div class="service-block reverse">
+    <div class="sb-left reveal-right">
+      <div class="sb-num">06</div>
+      <div class="sb-icon">🍽️</div>
+      <div class="free-badge">✦ Servizio completamente gratuito</div>
+      <h2>Too Good<br><em>To Go</em></h2>
+      <p class="sb-tagline">
+        Nessuna commissione, nessun costo — ti aiuto ad attivare l'account
+        e a ridurre gli sprechi della tua attività.
+      </p>
+    </div>
+    <div class="sb-right reveal">
+      <p>
+        Configuro l'account Too Good To Go per la tua attività alimentare
+        — dal pastificio alla pasticceria, dal ristorante al negozio di alimentari.
+        Un servizio che porta <strong>nuovi clienti e riduce gli sprechi</strong>,
+        senza nessun costo per te.
+      </p>
+      <ul class="include-list">
+        <li>Creazione e configurazione account TooGoodToGo</li>
+        <li>Foto e descrizione ottimizzate dell'attività</li>
+        <li>Impostazione categoria, codice sconto e Magic Box</li>
+        <li>Ottimizzazione profilo per massima visibilità</li>
+        <li>Zero commissioni o costi aggiuntivi</li>
+      </ul>
+      <a class="btn btn-primary" href="#contatti">Attivalo gratis →</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ PREZZI ════════════════════════════════ -->
+<div id="prezzi">
+  <div class="section">
+    <p class="section-label reveal">Investimento</p>
+    <h2 class="section-title reveal">Listino <em>prezzi</em></h2>
+    <div class="section-line reveal"></div>
+
+    <div class="prezzi-nota reveal">
+      🎉 &nbsp;<strong>Primo progetto con il 50% di sconto</strong> — contattami e approfitta dell'offerta!
+    </div>
+
+    <!-- ✏️ AGGIORNA I PREZZI con i tuoi valori reali dal listino -->
+    <div class="prezzi-grid reveal">
+
+      <div class="prezzo-card">
+        <p class="p-nome">Biglietto NFC</p>
+        <p class="p-valore"><sup>€</sup>—</p>
+        <p class="p-periodo">una tantum · da listino</p>
+        <ul class="p-lista">
+          <li>Tag NFC personalizzato</li>
+          <li>Design card incluso</li>
+          <li>Link configurabile</li>
+          <li>Consegna rapida</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Richiedi</a>
+      </div>
+
+      <div class="prezzo-card featured">
+        <p class="p-nome">Sito Web</p>
+        <p class="p-valore"><sup>€</sup>—</p>
+        <p class="p-periodo">una tantum · da listino</p>
+        <ul class="p-lista">
+          <li>Design personalizzato</li>
+          <li>Mobile responsive</li>
+          <li>SEO base incluso</li>
+          <li>Form di contatto</li>
+          <li>1 mese supporto post-consegna</li>
+        </ul>
+        <a class="btn btn-primary" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Richiedi</a>
+      </div>
+
+      <div class="prezzo-card">
+        <p class="p-nome">Gestione Social</p>
+        <p class="p-valore"><sup>€</sup>—</p>
+        <p class="p-periodo">al mese · da listino</p>
+        <ul class="p-lista">
+          <li>Strategia mensile</li>
+          <li>Creazione contenuti</li>
+          <li>Gestione profilo</li>
+          <li>Report mensile</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Richiedi</a>
+      </div>
+
+      <div class="prezzo-card">
+        <p class="p-nome">Brand Identity</p>
+        <p class="p-valore"><sup>€</sup>—</p>
+        <p class="p-periodo">pacchetto · da listino</p>
+        <ul class="p-lista">
+          <li>Logo + varianti</li>
+          <li>Palette & tipografia</li>
+          <li>Grafiche social</li>
+          <li>Brand guidelines</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Richiedi</a>
+      </div>
+
+      <div class="prezzo-card">
+        <p class="p-nome">Campagne Ads</p>
+        <p class="p-valore"><sup>€</sup>—</p>
+        <p class="p-periodo">al mese · da listino</p>
+        <ul class="p-lista">
+          <li>Strategia pubblicitaria</li>
+          <li>Creazione annunci</li>
+          <li>Targeting & ottimizzazione</li>
+          <li>Report settimanale</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Richiedi</a>
+      </div>
+
+      <div class="prezzo-card" style="background:rgba(217,92,122,.04);">
+        <p class="p-nome">Too Good To Go</p>
+        <p class="p-valore gratis">GRATIS</p>
+        <p class="p-periodo">zero commissioni</p>
+        <ul class="p-lista">
+          <li>Setup completo account</li>
+          <li>Foto & descrizione</li>
+          <li>Ottimizzazione visibilità</li>
+          <li>Nessun costo aggiuntivo</li>
+        </ul>
+        <a class="btn btn-ghost" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Attiva gratis</a>
+      </div>
+
+    </div>
+
+    <!-- REFERRAL -->
+    <div class="referral-box reveal">
+      <div class="ref-side">
+        <div class="ref-pct">30%</div>
+        <div class="ref-label">sconto al tuo cliente</div>
+      </div>
+      <div class="ref-div"></div>
+      <div>
+        <p class="ref-title">Programma Referral 🔥</p>
+        <p class="ref-desc">
+          Hai un amico o collega che ha bisogno di un sito o di un servizio?
+          Presentamelo: <strong>lui riceve il 30% di sconto</strong>,
+          e <strong>tu ricevi il 20% del valore</strong> del lavoro che mi hai portato.
+          Semplice e conveniente per tutti.
+        </p>
+        <br>
+        <a class="btn btn-primary" href="#contatti" style="display:inline-flex;font-size:.75rem;padding:.65rem 1.5rem;">Scopri di più →</a>
+      </div>
+      <div class="ref-div"></div>
+      <div class="ref-side">
+        <div class="ref-pct">20%</div>
+        <div class="ref-label">per te come referrer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ CONTATTI ══════════════════════════════ -->
+<div id="contatti">
+  <div class="section">
+    <div class="contatti-grid">
+
+      <div class="reveal-left">
+        <p class="section-label">Parliamo</p>
+        <h2 class="section-title">Hai un'idea?<br><em>Raccontamela.</em></h2>
+        <div class="section-line"></div>
+        <p class="cl-text">
+          Che tu abbia tutto chiaro o mille idee sparse —
+          scrivimi. Rispondo entro 24 ore
+          e il primo confronto è sempre gratuito.
+        </p>
+
+        <a class="contact-link" href="mailto:vallerianiheidi@gmail.com">
+          <span class="cl-icon">✉</span>
+          vallerianiheidi@gmail.com
+        </a>
+        <a class="contact-link" href="tel:+393498204228">
+          <span class="cl-icon">☎</span>
+          (+39) 349 820 4228
+        </a>
+        <a class="contact-link" href="https://wa.me/393498204228" target="_blank">
+          <span class="cl-icon">◇</span>
+          WhatsApp — rispondo subito
+        </a>
+        <a class="contact-link" href="https://vallerianiheidi.wixsite.com/heidi-studio" target="_blank">
+          <span class="cl-icon">↗</span>
+          Sito Wix (provvisorio)
+        </a>
+      </div>
+
+      <!-- ✏️ Configura Formspree: vai su formspree.io → crea form gratuito
+           → sostituisci TUOID con il tuo ID personale -->
+      <form class="form-contact reveal" action="https://formspree.io/f/TUOID" method="POST">
+        <input  type="text"  name="nome"      placeholder="Il tuo nome *" required />
+        <input  type="email" name="email"     placeholder="La tua email *" required />
+        <input  type="tel"   name="telefono"  placeholder="Telefono (opzionale)" />
+        <select name="servizio">
+          <option value="" disabled selected>Che servizio ti interessa?</option>
+          <option>Sito Web</option>
+          <option>Biglietto Digitale NFC</option>
+          <option>Gestione Social Media</option>
+          <option>Visual Brand Identity</option>
+          <option>Campagne Pubblicitarie</option>
+          <option>Too Good To Go (gratuito)</option>
+          <option>Programma Referral</option>
+          <option>Altro / Non so ancora</option>
+        </select>
+        <textarea name="messaggio" placeholder="Raccontami il tuo progetto — anche in modo confuso, ci penso io a fare ordine 😊"></textarea>
+        <button type="submit" class="btn btn-primary"
+          style="cursor:pointer;font-family:var(--font-b);border:none;">
+          Invia messaggio →
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ FOOTER ════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-logo">Heidi <em>Studio</em></div>
+  <div class="footer-center">© 2026 · Roma, Italia · Nessun abbonamento 🧚🏻</div>
+  <div class="footer-links">
+    <a href="portfolio.html">Portfolio</a>
+    <a href="servizi.html">Servizi</a>
+    <a href="#contatti">Contatti</a>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Heidi Studio</title>
+  <meta name="description" content="Portfolio di Heidi Studio: siti web, social media, branding, video e progetti digitali." />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+
+    /* ══ FILTRI ═════════════════════════════════ */
+    .filter-bar {
+      display: flex; gap: .6rem; flex-wrap: wrap;
+      margin-bottom: 3.5rem;
+    }
+    .filter-btn {
+      padding: .5rem 1.3rem;
+      font-size: .72rem; letter-spacing: .12em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all .2s;
+    }
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--pink); color: #fff;
+      border-color: var(--pink);
+    }
+
+    /* ══ GRIGLIA PORTFOLIO ══════════════════════ */
+    .portfolio-masonry {
+      columns: 3; column-gap: 1.2rem;
+    }
+    .portfolio-card {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg2);
+      cursor: pointer;
+      transition: transform .35s var(--ease);
+    }
+    .portfolio-card:hover { transform: translateY(-5px); }
+
+    .portfolio-card img {
+      width: 100%; display: block;
+      transition: transform .5s var(--ease), filter .4s;
+      filter: brightness(.9);
+    }
+    .portfolio-card:hover img {
+      transform: scale(1.04); filter: brightness(1.05);
+    }
+    .pc-placeholder {
+      width: 100%; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, rgba(217,92,122,.1), rgba(12,10,11,.8));
+      transition: background .3s;
+    }
+    .pc-placeholder.tall  { aspect-ratio: 3/4; }
+    .pc-placeholder.wide  { aspect-ratio: 4/3; }
+    .pc-placeholder.sq    { aspect-ratio: 1/1; }
+
+    .portfolio-card:hover .pc-placeholder {
+      background: linear-gradient(135deg, rgba(217,92,122,.18), rgba(12,10,11,.6));
+    }
+
+    .pc-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(12,10,11,.95) 0%, rgba(12,10,11,.3) 50%, transparent 100%);
+      border-radius: 18px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.8rem; opacity: 0;
+      transition: opacity .3s;
+    }
+    .portfolio-card:hover .pc-overlay { opacity: 1; }
+    .pc-cat {
+      font-size: .65rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--pink-l);
+      margin-bottom: .3rem;
+    }
+    .pc-title {
+      font-family: var(--font-h); font-size: 1.25rem;
+      font-weight: 400; color: var(--cream);
+      margin-bottom: .6rem;
+    }
+    .pc-desc { font-size: .82rem; color: rgba(242,237,232,.7); line-height: 1.55; }
+
+    /* Tag visibile senza hover */
+    .pc-tag-wrap {
+      position: absolute; top: 1rem; left: 1rem;
+    }
+    .pc-tag {
+      font-size: .62rem; letter-spacing: .1em;
+      text-transform: uppercase;
+      background: rgba(12,10,11,.7);
+      border: 1px solid var(--border);
+      color: var(--pink-l);
+      padding: .25rem .7rem; border-radius: 100px;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Hidden filtro */
+    .portfolio-card.hidden {
+      display: none;
+    }
+
+    /* ══ MODAL PROGETTO ══════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 900;
+      background: rgba(12,10,11,.97);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .35s;
+    }
+    .modal-overlay.open {
+      opacity: 1; pointer-events: all;
+    }
+    .modal-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 860px; width: 90%;
+      max-height: 88vh; overflow-y: auto;
+      padding: 3.5rem;
+      transform: translateY(30px);
+      transition: transform .4s var(--ease);
+      position: relative;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      width: 40px; height: 40px;
+      border: 1px solid var(--border); border-radius: 50%;
+      background: transparent; color: var(--muted);
+      font-size: 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s, color .2s;
+    }
+    .modal-close:hover { border-color: var(--pink); color: var(--pink-l); }
+
+    .modal-cat {
+      font-size: .68rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--pink-l);
+      margin-bottom: .8rem;
+    }
+    .modal-title {
+      font-family: var(--font-h); font-size: 2.5rem;
+      font-weight: 300; margin-bottom: 1.5rem;
+    }
+    .modal-img {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover;
+      border-radius: 12px; margin-bottom: 2rem;
+      background: var(--bg3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .modal-body { color: var(--muted); line-height: 1.85; margin-bottom: 2rem; }
+    .modal-body p { margin-bottom: 1rem; }
+    .modal-body p strong { color: var(--cream); }
+
+    .modal-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .m-tag {
+      font-size: .68rem; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--pink-l);
+      border: 1px solid var(--border); padding: .3rem .8rem;
+      border-radius: 100px;
+    }
+
+    /* ══ RESPONSIVE ═════════════════════════════ */
+    @media (max-width: 900px) {
+      .portfolio-masonry { columns: 2; }
+    }
+    @media (max-width: 560px) {
+      .portfolio-masonry { columns: 1; }
+      .modal-box { padding: 2rem; }
+      .modal-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body class="grain">
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ══ NAVBAR ════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <a class="nav-logo" href="index.html">Heidi <em>Studio</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="portfolio.html">Portfolio</a></li>
+    <li><a href="servizi.html">Servizi</a></li>
+    <li><a href="servizi.html#contatti">Contatti</a></li>
+  </ul>
+  <div class="nav-burger" id="nav-burger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="index.html">Home</a>
+  <a href="portfolio.html">Portfolio</a>
+  <a href="servizi.html">Servizi</a>
+  <a href="servizi.html#contatti">Contatti</a>
+</div>
+
+
+<!-- ══ PAGE HERO ═════════════════════════════ -->
+<div class="page-hero">
+  <p class="page-hero-num">02 — Lavori</p>
+  <h1 class="page-hero-title">
+    I miei<br><em>progetti</em>
+  </h1>
+  <p class="page-hero-sub" style="margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid rgba(217,92,122,0.2);">37+ progetti realizzati per brand, professionisti e attività locali.</p>
+</div>
+
+<!-- ══ PORTFOLIO FILTRABLE ════════════════════ -->
+<div class="section" style="padding-top:4rem;">
+
+  <!-- Filtri -->
+  <div class="filter-bar reveal">
+    <button class="filter-btn active" data-filter="all">Tutti</button>
+    <button class="filter-btn" data-filter="web">Siti Web</button>
+    <button class="filter-btn" data-filter="social">Social</button>
+    <button class="filter-btn" data-filter="video">Video</button>
+    <button class="filter-btn" data-filter="hospitality">Hospitality</button>
+    <button class="filter-btn" data-filter="brand">Brand</button>
+    <button class="filter-btn" data-filter="food">Food & Resto</button>
+  </div>
+
+  <!--
+    ✏️ PER AGGIUNGERE UN NUOVO PROGETTO: duplica uno dei blocchi qui sotto.
+       Cambia: data-title, data-cat, data-emoji, data-desc, data-tags, data-category
+       Per la foto: sostituisci <div class="pc-placeholder ...">🏡</div>
+       con: <img src="img/nomeimmagine.jpg" alt="Nome progetto">
+  -->
+
+  <!-- Griglia masonry — ordine strategico per impatto visivo -->
+  <div class="portfolio-masonry" id="portfolio-grid">
+
+    <!-- ① CASALE DEI FALCHI — primo perché il più completo (web+airbnb+social) -->
+    <div class="portfolio-card card-hover"
+         data-category="hospitality web social"
+         data-title="Casale dei Falchi"
+         data-cat="Airbnb · Sito Web · Social Media"
+         data-emoji="🦅"
+         data-desc="Progetto a 360°: ho curato la gestione Airbnb (foto professionali, descrizioni, comunicazione ospiti), realizzato il sito web del casale e gestito i canali social per valorizzare la struttura e attirare nuovi ospiti. Un'esperienza rurale autentica, raccontata con cura in ogni dettaglio digitale."
+         data-tags="Airbnb,Sito Web,Social Media,Fotografia,Copywriting,Hospitality">
+      <div class="pc-placeholder tall">🦅</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Progetto Completo</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Airbnb · Sito Web · Social Media</p>
+        <p class="pc-title">Casale dei Falchi</p>
+        <p class="pc-desc">Gestione Airbnb, sito web e social — tutto in uno.</p>
+      </div>
+    </div>
+
+    <!-- ② MIMI ET MAMÀ — fashion, molto visivo, glamour -->
+    <div class="portfolio-card card-hover"
+         data-category="social video"
+         data-title="Mimi et Mamà Alta Sartoria"
+         data-cat="Fashion — TikTok & Instagram"
+         data-emoji="👗"
+         data-desc="Ho creato contenuti per TikTok e Instagram, valorizzando il brand attraverso video, storytelling visivo e una comunicazione elegante e riconoscibile."
+         data-tags="TikTok,Instagram,Video,Storytelling,Fashion">
+      <div class="pc-placeholder wide">👗</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Fashion</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Fashion — TikTok & Instagram</p>
+        <p class="pc-title">Mimi et Mamà Alta Sartoria</p>
+        <p class="pc-desc">Video e contenuti eleganti per un brand di alta sartoria.</p>
+      </div>
+    </div>
+
+    <!-- ③ ICT COACH — credibilità tecnica (web + logo) -->
+    <div class="portfolio-card card-hover"
+         data-category="web brand"
+         data-title="ICT Coach"
+         data-cat="Sito Web & Logo"
+         data-emoji="💻"
+         data-desc="Ho realizzato sia il sito web sia il logo. Mi sono occupata del design visivo, dell'architettura delle pagine e dei contenuti, creando un'identità chiara e professionale che guida l'utente tra formazione, supporto tecnico e soluzioni digitali."
+         data-tags="Web Design,Logo,Branding,UI/UX">
+      <div class="pc-placeholder sq">💻</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Web</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Sito Web & Logo</p>
+        <p class="pc-title">ICT Coach</p>
+        <p class="pc-desc">Identità digitale completa: sito web e logo da zero.</p>
+      </div>
+    </div>
+
+    <!-- ④ FATTORIA NONNA IOLANDA — storia d'origine, personale e commovente -->
+    <div class="portfolio-card card-hover"
+         data-category="hospitality"
+         data-title="Fattoria Nonna Iolanda"
+         data-cat="Airbnb & Hospitality"
+         data-emoji="🏡"
+         data-desc="Ho curato la gestione completa dell'Airbnb: foto professionali, descrizioni, libro guida turistica del territorio, organizzazione delle prenotazioni e comunicazione con gli ospiti, trasformando la fattoria in un'esperienza accogliente e autentica. È il progetto che ha dato inizio a tutto."
+         data-tags="Airbnb,Fotografia,Copywriting,Gestione,Umbria">
+      <div class="pc-placeholder tall">🏡</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Hospitality</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Airbnb & Hospitality</p>
+        <p class="pc-title">Fattoria Nonna Iolanda</p>
+        <p class="pc-desc">Il progetto che ha dato inizio a tutto — Airbnb di successo in Umbria.</p>
+      </div>
+    </div>
+
+    <!-- ⑤ PASTICCERIA BISCOTTO — social + ads, relazionabile -->
+    <div class="portfolio-card card-hover"
+         data-category="food social"
+         data-title="Pasticceria Biscotto"
+         data-cat="Social Media & Advertising"
+         data-emoji="🍪"
+         data-desc="Ho gestito i social, creato contenuti e sviluppato campagne pubblicitarie mirate per raccontare il brand in modo autentico e aumentare la visibilità online."
+         data-tags="Instagram,Ads,Contenuti,Campagne">
+      <div class="pc-placeholder wide">🍪</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Social & Ads</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Social Media & Advertising</p>
+        <p class="pc-title">Pasticceria Biscotto</p>
+        <p class="pc-desc">Social, contenuti e campagne ads per una pasticceria.</p>
+      </div>
+    </div>
+
+    <!-- ⑥ RYDERCUP HOUSE — evento internazionale, prestigio -->
+    <div class="portfolio-card card-hover"
+         data-category="hospitality"
+         data-title="Rydercup House"
+         data-cat="Hospitality & Storytelling"
+         data-emoji="🏌️"
+         data-desc="Ho curato contenuti e comunicazione per un alloggio dedicato agli ospiti della Ryder Cup. Mi sono occupata di foto, video e storytelling per valorizzare gli spazi e creare un'immagine accogliente e professionale, pensata per chi cerca comfort durante l'evento."
+         data-tags="Hospitality,Fotografia,Video,Storytelling,Ryder Cup">
+      <div class="pc-placeholder sq">🏌️</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Hospitality</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Hospitality & Storytelling</p>
+        <p class="pc-title">Rydercup House</p>
+        <p class="pc-desc">Contenuti e immagine per un alloggio durante la Ryder Cup.</p>
+      </div>
+    </div>
+
+    <!-- ⑦ NOLEGGIO TOMASSI — video, competenza diversa -->
+    <div class="portfolio-card card-hover"
+         data-category="video"
+         data-title="Noleggio Tomassi"
+         data-cat="Video & Comunicazione"
+         data-emoji="🚚"
+         data-desc="Ho curato comunicazione, immagine, gestione delle prenotazioni ed editing video, rendendo il servizio di noleggio furgoni semplice, chiaro e immediato."
+         data-tags="Video,Editing,Comunicazione,Branding">
+      <div class="pc-placeholder wide">🚚</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Video</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Video & Comunicazione</p>
+        <p class="pc-title">Noleggio Tomassi</p>
+        <p class="pc-desc">Video promozionale e comunicazione per apertura nuova sede.</p>
+      </div>
+    </div>
+
+    <!-- ⑧ PASTIFICIO ANTONIO AMATO — food content -->
+    <div class="portfolio-card card-hover"
+         data-category="food social"
+         data-title="Pastificio Antonio Amato"
+         data-cat="Social Media Content"
+         data-emoji="🍝"
+         data-desc="Ho gestito i contenuti digitali, occupandomi di creare materiali visivi e copy per raccontare la qualità del brand. Ho sviluppato contenuti per i social con uno stile fresco e legato alla tradizione del pastificio."
+         data-tags="Social,Copywriting,Contenuti,Food">
+      <div class="pc-placeholder tall">🍝</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Food</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Social Media Content</p>
+        <p class="pc-title">Pastificio Antonio Amato</p>
+        <p class="pc-desc">Contenuti digitali e social per un pastificio artigianale.</p>
+      </div>
+    </div>
+
+    <!-- ⑨ CHIOCCHI TRADING — community, settore diverso -->
+    <div class="portfolio-card card-hover"
+         data-category="social"
+         data-title="Chiocchi Trading"
+         data-cat="Community Management"
+         data-emoji="📈"
+         data-desc="Ho moderato la community Telegram di D. Chiocchi, gestendo comunicazioni, organizzazione dei contenuti e supporto ai membri per garantire un ambiente ordinato, attivo e affidabile."
+         data-tags="Telegram,Community,Trading,Moderazione">
+      <div class="pc-placeholder sq">📈</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">Community</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Community Management</p>
+        <p class="pc-title">Chiocchi Trading</p>
+        <p class="pc-desc">Moderazione e gestione community Telegram per canale trading.</p>
+      </div>
+    </div>
+
+    <!-- ⑩ MANI IN PASTA — chiude con il servizio più unico -->
+    <div class="portfolio-card card-hover"
+         data-category="food"
+         data-title="Mani in Pasta — Too Good To Go"
+         data-cat="Too Good To Go"
+         data-emoji="🍝"
+         data-desc="Ho creato e configurato l'account Too Good To Go del pastificio, impostando descrizioni, foto, categorie e il codice sconto dedicato. Zero commissioni o costi per l'attività."
+         data-tags="Too Good To Go,Food,Zero Sprechi">
+      <div class="pc-placeholder wide">🍝</div>
+      <div class="pc-tag-wrap"><span class="pc-tag">TooGoodToGo</span></div>
+      <div class="pc-overlay">
+        <p class="pc-cat">Too Good To Go</p>
+        <p class="pc-title">Mani in Pasta</p>
+        <p class="pc-desc">Setup gratuito Too Good To Go per un pastificio locale.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ CTA ════════════════════════════════════ -->
+<div style="text-align:center; padding: 6rem 2rem 9rem;">
+  <p class="section-label reveal">Vuoi essere qui?</p>
+  <h2 class="section-title reveal" style="margin-bottom:2rem;">Lavoriamo insieme</h2>
+  <a class="btn btn-primary reveal" href="servizi.html#contatti">Scrivimi ora →</a>
+</div>
+
+
+<!-- ══ MODAL ══════════════════════════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">✕</button>
+    <p class="modal-cat" id="m-cat"></p>
+    <h2 class="modal-title" id="m-title"></h2>
+    <div class="modal-img" id="m-img"></div>
+    <div class="modal-body" id="m-body"></div>
+    <div class="modal-tags" id="m-tags"></div>
+  </div>
+</div>
+
+
+<!-- ══ FOOTER ════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-logo">Heidi <em>Studio</em></div>
+  <div class="footer-center">© 2026 · Roma, Italia</div>
+  <div class="footer-links">
+    <a href="portfolio.html">Portfolio</a>
+    <a href="servizi.html">Servizi</a>
+    <a href="servizi.html#contatti">Contatti</a>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+/* FILTRO ────────────────────────────────────── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.portfolio-card').forEach(card => {
+      const cats = card.dataset.category || '';
+      if (filter === 'all' || cats.includes(filter)) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+  });
+});
+
+/* MODAL ─────────────────────────────────────── */
+const modal      = document.getElementById('modal');
+const modalClose = document.getElementById('modal-close');
+
+document.querySelectorAll('.portfolio-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.getElementById('m-cat').textContent   = card.dataset.cat   || '';
+    document.getElementById('m-title').textContent = card.dataset.title || '';
+    document.getElementById('m-img').textContent   = card.dataset.emoji || '';
+    document.getElementById('m-body').innerHTML =
+      '<p>' + (card.dataset.desc || '') + '</p>';
+    const tags = (card.dataset.tags || '').split(',');
+    document.getElementById('m-tags').innerHTML =
+      tags.map(t => `<span class="m-tag">${t.trim()}</span>`).join('');
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
